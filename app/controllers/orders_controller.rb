@@ -2,7 +2,7 @@ class OrdersController < ApplicationController
   before_action :authenticate_user!, only: [:create]
 
   def show
-    @order - Order.find(params[:id])
+    @order = Order.find_by_token(params[:id])
     @product_lists = @order.product_lists
   end
 
@@ -22,10 +22,25 @@ class OrdersController < ApplicationController
         product_list.save
       end
 
-      redirect_to order_path(@order)
+      redirect_to order_path(@order.token)
     else
       render 'cart/checkout'
     end
+  end
+
+  def pay_with_alipay
+    @order = Order.find_by_token(params[:id])
+    @order.set_payment_with!("alipay")
+    @order.pay!
+
+    redirect_to order_path(@order.token), notice: "使用支付宝成功完成付款"
+  end
+
+  def pay_with_wechat
+    @order = Order.find_by_token(params[:id])
+    @order.set_payment_with!("wechat")
+
+    redirect_to order_path(@order.token), notice: "使用微信成功完成付款"
   end
 
   private
