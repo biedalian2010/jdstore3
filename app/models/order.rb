@@ -29,7 +29,7 @@ class Order < ApplicationRecord
     state :paid
     state :shipping
     state :shipped
-    state :order_canclled
+    state :order_cancelled
     state :good_returned
 
     event :make_payment, after_commit: :pay! do
